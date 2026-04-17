@@ -1,3 +1,5 @@
+'use client';
+// ... rest of your code ...
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Menu, X, ArrowRight, Instagram, Mail, Compass, Hexagon, Layers, Zap, Plus, Minus, Check, Send, Paperclip, PenTool, ExternalLink, LogIn, User, Package, LogOut, PlayCircle, Settings, Ruler, Wrench, Search, Star, MessageCircle, MapPin, UploadCloud, ChevronDown, ShieldCheck, Truck, CreditCard, Sparkles, Loader2, LayoutDashboard, Box, ClipboardList, Inbox, Edit, Trash2 } from 'lucide-react';
 
