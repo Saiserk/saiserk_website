@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ['firebase', '@firebase/auth', '@firebase/app', 'undici'],
+  experimental: {
+    serverComponentsExternalPackages: ['undici', 'firebase', '@firebase/auth'],
+  },
 };
 
 export default nextConfig;
