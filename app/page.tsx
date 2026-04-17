@@ -183,27 +183,27 @@ const FAQ_ITEMS = [
 ];
 
 export default function App() {
-  const [currentView, setCurrentView] = useState('home'); // home, products, custom, cart, checkout, orders, faq, legal, admin
-  const [cart, setCart] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('Todo');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [currentView, setCurrentView] = useState<string>('home'); // home, products, custom, cart, checkout, orders, faq, legal, admin
+  const [cart, setCart] = useState<any[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('Todo');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+  const [scrolled, setScrolled] = useState<boolean>(false);
   
   const [user, setUser] = useState<any>(null); 
-  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const [isAuthLoading, setIsAuthLoading] = useState<boolean>(true);
 
-  const [products, setProducts] = useState(MOCK_PRODUCTS);
+  const [products, setProducts] = useState<any[]>(MOCK_PRODUCTS);
   const [customRequests, setCustomRequests] = useState<any[]>([]);
 
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
-  const [activeMediaIndex, setActiveMediaIndex] = useState(0); 
+  const [activeMediaIndex, setActiveMediaIndex] = useState<number>(0); 
 
-  const [orders, setOrders] = useState(MOCK_ORDERS);
-  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [orders, setOrders] = useState<any[]>(MOCK_ORDERS);
+  const [isProcessingPayment, setIsProcessingPayment] = useState<boolean>(false);
 
-  const [reviews, setReviews] = useState(INITIAL_REVIEWS);
-  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviews, setReviews] = useState<any[]>(INITIAL_REVIEWS);
+  const [showReviewModal, setShowReviewModal] = useState<boolean>(false);
   const [itemToReview, setItemToReview] = useState<any>(null);
 
   // Variable de seguridad derivada
@@ -683,7 +683,7 @@ export default function App() {
           <div className="lg:col-span-3">
             <form 
               className="bg-white border border-slate-200 rounded-[2rem] p-8 md:p-10 shadow-sm" 
-              onSubmit={(e) => { 
+              onSubmit={(e: any) => { 
                 e.preventDefault(); 
                 const newRequest = { ...formData, id: `REQ-${Math.floor(Math.random() * 9000) + 1000}`, date: new Date().toLocaleDateString('es-CL') };
                 setCustomRequests([newRequest, ...customRequests]);
