@@ -1,5 +1,5 @@
 'use client';
-// ... rest of your code ...
+
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Menu, X, ArrowRight, Instagram, Mail, Compass, Hexagon, Layers, Zap, Plus, Minus, Check, Send, Paperclip, PenTool, ExternalLink, LogIn, User, Package, LogOut, PlayCircle, Settings, Ruler, Wrench, Search, Star, MessageCircle, MapPin, UploadCloud, ChevronDown, ShieldCheck, Truck, CreditCard, Sparkles, Loader2, LayoutDashboard, Box, ClipboardList, Inbox, Edit, Trash2 } from 'lucide-react';
 
@@ -8,15 +8,21 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from 'firebase/auth';
 
 // --- CONFIGURACIÓN DE FIREBASE ---
-let auth = null;
-try {
-  if (typeof __firebase_config !== 'undefined') {
-    const firebaseConfig = JSON.parse(__firebase_config);
-    const app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
+let auth: any = null;
+
+if (typeof window !== 'undefined') {
+  try {
+    // @ts-ignore
+    const configVar = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
+    
+    if (configVar) {
+      const firebaseConfig = JSON.parse(configVar);
+      const app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+    }
+  } catch (error) {
+    console.warn("Firebase check failed, using local mode.");
   }
-} catch (error) {
-  console.warn("Configuración de Firebase no detectada. Funcionando en modo de prueba local.");
 }
 
 // --- DATOS DE LA TIENDA ---
@@ -184,13 +190,13 @@ export default function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   
-  const [user, setUser] = useState(null); 
+  const [user, setUser] = useState<any>(null); 
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   const [products, setProducts] = useState(MOCK_PRODUCTS);
-  const [customRequests, setCustomRequests] = useState([]);
+  const [customRequests, setCustomRequests] = useState<any[]>([]);
 
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [activeMediaIndex, setActiveMediaIndex] = useState(0); 
 
   const [orders, setOrders] = useState(MOCK_ORDERS);
@@ -198,7 +204,7 @@ export default function App() {
 
   const [reviews, setReviews] = useState(INITIAL_REVIEWS);
   const [showReviewModal, setShowReviewModal] = useState(false);
-  const [itemToReview, setItemToReview] = useState(null);
+  const [itemToReview, setItemToReview] = useState<any>(null);
 
   // Variable de seguridad derivada
   const isAdmin = user && ADMIN_EMAILS.includes(user.email);
@@ -238,8 +244,8 @@ export default function App() {
   }, [selectedProduct]);
 
   // --- FUNCIONES DEL CARRITO ---
-  const addToCart = (product) => {
-    setCart((prev) => {
+  const addToCart = (product: any) => {
+    setCart((prev: any[]) => {
       const existing = prev.find((item) => item.id === product.id);
       if (existing) {
         if (existing.quantity < product.stock) {
@@ -251,16 +257,16 @@ export default function App() {
     });
   };
 
-  const updateQuantity = (id, delta) => setCart((prev) => prev.map(item => item.id === id ? { ...item, quantity: Math.max(1, Math.min(item.quantity + delta, item.stock)) } : item));
-  const removeFromCart = (id) => setCart((prev) => prev.filter((item) => item.id !== id));
+  const updateQuantity = (id: any, delta: any) => setCart((prev: any[]) => prev.map(item => item.id === id ? { ...item, quantity: Math.max(1, Math.min(item.quantity + delta, item.stock)) } : item));
+  const removeFromCart = (id: any) => setCart((prev: any[]) => prev.filter((item) => item.id !== id));
   
-  const cartTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const cartItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const cartTotal = cart.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
+  const cartItemsCount = cart.reduce((sum: number, item: any) => sum + item.quantity, 0);
 
-  const formatPrice = (price) => new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(price);
+  const formatPrice = (price: number) => new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(price);
 
   // --- LÓGICA DE SIMULACIÓN DE PAGO DESDE CHECKOUT ---
-  const handleProcessPayment = (shippingCost, shippingMethodName) => {
+  const handleProcessPayment = (shippingCost: number, shippingMethodName: string) => {
     setIsProcessingPayment(true);
     
     setTimeout(() => {
@@ -269,7 +275,7 @@ export default function App() {
         date: new Date().toLocaleDateString('es-CL', { day: 'numeric', month: 'long', year: 'numeric' }),
         status: 'Pago Recibido',
         total: cartTotal + shippingCost,
-        items: cart.map(item => `${item.name} (x${item.quantity})`),
+        items: cart.map((item: any) => `${item.name} (x${item.quantity})`),
         shipping: shippingMethodName
       };
       
@@ -277,7 +283,7 @@ export default function App() {
       
       // Update actual product stock upon purchase
       const updatedProducts = products.map(p => {
-        const cartItem = cart.find(ci => ci.id === p.id);
+        const cartItem: any = cart.find((ci: any) => ci.id === p.id);
         if (cartItem && !p.isService) {
           return { ...p, stock: Math.max(0, p.stock - cartItem.quantity) };
         }
@@ -304,7 +310,7 @@ export default function App() {
       }
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Autenticación bloqueada por el entorno:", error.message);
       setUser({ name: 'Usuario Autorizado', email: 'cliente@saiserk.cl', photoURL: 'https://placehold.co/100x100/2563eb/ffffff?text=U' });
       setIsAuthLoading(false);
@@ -623,12 +629,12 @@ export default function App() {
   };
 
   const CustomOrderView = () => {
-    const [formData, setFormData] = useState({ 
+    const [formData, setFormData] = useState<any>({ 
       name: '', email: '', area: 'madera', specs: '', 
       file: null, region: '', mapPin: null 
     });
 
-    const handleFileChange = (e) => {
+    const handleFileChange = (e: any) => {
       const selectedFile = e.target.files[0];
       if (selectedFile && selectedFile.size > 10 * 1024 * 1024) {
         alert("El archivo supera el límite de 10MB.");
@@ -637,7 +643,7 @@ export default function App() {
       setFormData({ ...formData, file: selectedFile });
     };
 
-    const handleMapClick = (e) => {
+    const handleMapClick = (e: any) => {
       const rect = e.currentTarget.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width) * 100;
       const y = ((e.clientY - rect.top) / rect.height) * 100;
@@ -723,7 +729,7 @@ export default function App() {
 
               <div className="space-y-2 mb-6">
                 <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Especificaciones Técnicas</label>
-                <textarea required rows="8" value={formData.specs} onChange={e => setFormData({...formData, specs: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-500 focus:bg-white transition-all resize-none"></textarea>
+                <textarea required rows={8} value={formData.specs} onChange={e => setFormData({...formData, specs: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-500 focus:bg-white transition-all resize-none"></textarea>
               </div>
               
               <div className="mb-8">
@@ -760,7 +766,7 @@ export default function App() {
       ) : (
         <div className="flex flex-col lg:flex-row gap-12">
           <div className="lg:w-2/3 space-y-4">
-            {cart.map(item => (
+            {cart.map((item: any) => (
               <div key={item.id} className="group bg-white p-4 md:p-6 rounded-3xl flex items-center gap-6 border border-slate-200 shadow-sm">
                 <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl overflow-hidden flex-shrink-0 bg-slate-100"><img src={item.image} alt={item.name} className="w-full h-full object-cover" /></div>
                 <div className="flex-grow">
@@ -819,7 +825,7 @@ export default function App() {
 
     const finalTotal = cartTotal + shippingCost;
 
-    const handleSubmitCheckout = (e) => {
+    const handleSubmitCheckout = (e: any) => {
       e.preventDefault();
       handleProcessPayment(shippingCost, shippingMethodName);
     };
@@ -1027,7 +1033,7 @@ export default function App() {
                 </div>
                 
                 <ul className="text-slate-600 text-sm mt-4 space-y-2 w-full">
-                  {order.items.map((item, i) => (
+                  {order.items.map((item: any, i: any) => (
                     <li key={i} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-2 last:border-0 last:pb-0">
                       <span className="flex items-center gap-2"><Package size={16} className="text-slate-400"/> {item}</span>
                       {order.status === 'Entregado' && (
@@ -1084,7 +1090,7 @@ export default function App() {
   const WriteReviewModal = () => {
     const [newReview, setNewReview] = useState({ text: '', rating: 5 });
 
-    const handleSubmitReview = (e) => {
+    const handleSubmitReview = (e: any) => {
       e.preventDefault();
       const reviewToSave = { name: user.name, role: "Cliente Verificado", product: itemToReview, text: newReview.text, rating: newReview.rating };
       setReviews([reviewToSave, ...reviews]);
@@ -1117,7 +1123,7 @@ export default function App() {
             </div>
             <div>
               <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2 block">Tu Opinión</label>
-              <textarea required rows="4" value={newReview.text} onChange={e => setNewReview({...newReview, text: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 resize-none" placeholder="¿Qué te pareció el producto, la calidad o el tiempo de entrega?"></textarea>
+              <textarea required rows={4} value={newReview.text} onChange={e => setNewReview({...newReview, text: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 resize-none" placeholder="¿Qué te pareció el producto, la calidad o el tiempo de entrega?"></textarea>
             </div>
             <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-all active:scale-95 shadow-md mt-2 flex items-center justify-center gap-2">Publicar Reseña <Check size={18} /></button>
           </form>
@@ -1139,11 +1145,11 @@ export default function App() {
     const pedidosPendientes = orders.filter(o => o.status !== 'Entregado').length;
     const productosAgotados = products.filter(p => p.stock === 0 && !p.isService).length;
 
-    const handleUpdateOrderStatus = (orderId, newStatus) => {
+    const handleUpdateOrderStatus = (orderId: any, newStatus: any) => {
       setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
     };
 
-    const handleUpdateProductStock = (productId, newStock) => {
+    const handleUpdateProductStock = (productId: any, newStock: any) => {
       setProducts(products.map(p => p.id === productId ? { ...p, stock: parseInt(newStock) || 0 } : p));
     };
 
@@ -1264,7 +1270,7 @@ export default function App() {
                     <div className="bg-slate-50 rounded-xl p-4 text-sm text-slate-600 border border-slate-100">
                       <p className="font-bold text-slate-900 mb-2">Contenido de la orden:</p>
                       <ul className="list-disc list-inside space-y-1">
-                        {order.items.map((item, i) => <li key={i}>{item}</li>)}
+                        {order.items.map((item: any, i: any) => <li key={i}>{item}</li>)}
                       </ul>
                       <div className="mt-4 flex justify-between items-center pt-4 border-t border-slate-200">
                         <span className="text-xs font-bold text-blue-600 uppercase tracking-widest flex items-center gap-1"><Truck size={12}/> {order.shipping || 'Retiro Local'}</span>
@@ -1336,20 +1342,20 @@ export default function App() {
               <h3 className="text-2xl font-black text-slate-900 mb-6 flex items-center gap-2"><Box className="text-blue-600"/> Añadir Nuevo Producto</h3>
               
               <form 
-                onSubmit={(e) => {
+                onSubmit={(e: any) => {
                   e.preventDefault();
                   const formData = new FormData(e.target);
                   
                   // Crear URL temporal para la imagen si se subió un archivo
-                  const imageFile = formData.get('image');
+                  const imageFile: any = formData.get('image');
                   const imageUrl = imageFile.size > 0 ? URL.createObjectURL(imageFile) : 'https://placehold.co/800x1000/e2e8f0/475569?text=Nuevo+Producto';
 
                   const newProduct = {
                     id: Math.floor(Math.random() * 10000),
                     name: formData.get('name'),
-                    price: parseInt(formData.get('price')),
+                    price: parseInt(formData.get('price') as string),
                     category: formData.get('category'),
-                    stock: parseInt(formData.get('stock')),
+                    stock: parseInt(formData.get('stock') as string),
                     isService: formData.get('category') === 'Servicios Profesionales',
                     isLimitedEdition: formData.get('category') === 'Edición Limitada',
                     image: imageUrl,
@@ -1392,21 +1398,21 @@ export default function App() {
 
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2 block">Descripción Principal</label>
-                  <textarea name="description" required rows="3" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 resize-none" placeholder="Breve resumen comercial del producto..."></textarea>
+                  <textarea name="description" required rows={3} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 resize-none" placeholder="Breve resumen comercial del producto..."></textarea>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2 block">⚙️ Fabricación</label>
-                    <textarea name="howItsMade" required rows="2" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-blue-500 resize-none" placeholder="Técnicas y materiales..."></textarea>
+                    <textarea name="howItsMade" required rows={2} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-blue-500 resize-none" placeholder="Técnicas y materiales..."></textarea>
                   </div>
                   <div>
                     <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2 block">📏 Dimensiones</label>
-                    <textarea name="dimensions" required rows="2" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-blue-500 resize-none" placeholder="Alto x Ancho..."></textarea>
+                    <textarea name="dimensions" required rows={2} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-blue-500 resize-none" placeholder="Alto x Ancho..."></textarea>
                   </div>
                   <div>
                     <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2 block">💪 Capacidad / Extra</label>
-                    <textarea name="capacity" required rows="2" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-blue-500 resize-none" placeholder="Soporta hasta..."></textarea>
+                    <textarea name="capacity" required rows={2} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-blue-500 resize-none" placeholder="Soporta hasta..."></textarea>
                   </div>
                 </div>
 
